@@ -11,7 +11,11 @@ rtl_view: rtl_sim
 
 c_elf: 
 	riscv64-unknown-elf-as -march=rv32i -mabi=ilp32 c/crt0.S -o c/crt0.o
-	riscv64-unknown-elf-gcc -ffreestanding -nostdlib -T c/link.ld -march=rv32i -mabi=ilp32 c/crt0.o c/main.c -o c/program.elf -lgcc
+	riscv64-unknown-elf-gcc -O2 -ffreestanding -nostdlib -T c/link.ld -march=rv32i -mabi=ilp32 c/crt0.o c/main.c -o c/program.elf -lgcc
 c_hex: c_elf
 	riscv64-unknown-elf-objcopy -O verilog --only-section=.text* --only-section=.rodata* c/program.elf imem.hex
-	riscv64-unknown-elf-objcopy -O verilog --only-section=.data* --only-section=.bss*  c/program.elf dmem.hex
+	riscv64-unknown-elf-objcopy -O verilog \
+		--only-section=.data* --only-section=.bss* \
+		--only-section=.sdata* --only-section=.sbss* \
+		--change-section-lma '*-0x00100000' \
+		c/program.elf dmem.hex
