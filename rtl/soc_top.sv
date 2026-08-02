@@ -7,7 +7,7 @@ module soc_top(
     logic [31:0] imem_addr, imem_data;
     logic [31:0] dmem_addr, dmem_rdata, dmem_wdata;
     logic dmem_read, dmem_write;
-    logic [2:0] dmem_width;
+    logic [1:0] dmem_width;
 
     cpu_top core(
         .clk(clk),

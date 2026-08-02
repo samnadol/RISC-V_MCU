@@ -1,13 +1,17 @@
-.PHONY: view clean 
+.PHONY: rtl_compile rtl_sim c_elf c_bin c_hex
 
-compile: 
+rtl_compile: 
 	verilator --cc --exe --trace -Irtl/pkg -Irtl/mem -Irtl/core rtl/pkg/riscv_pkg.sv rtl/soc_top.sv sim.cpp
-
-build: compile
+rtl_build: rtl_compile
 	make -C obj_dir -f Vriscv_pkg.mk
-
-sim: build
+rtl_sim: rtl_build
 	./obj_dir/Vriscv_pkg
-
-view:
+rtl_view: rtl_sim
 	gtkwave waveform.vcd
+
+c_elf: 
+	riscv64-unknown-elf-as -march=rv32i -mabi=ilp32 c/crt0.S -o c/crt0.o
+	riscv64-unknown-elf-gcc -ffreestanding -nostdlib -T c/link.ld -march=rv32i -mabi=ilp32 c/crt0.o c/main.c -o c/program.elf -lgcc
+c_hex: c_elf
+	riscv64-unknown-elf-objcopy -O verilog --only-section=.text* --only-section=.rodata* c/program.elf imem.hex
+	riscv64-unknown-elf-objcopy -O verilog --only-section=.data* --only-section=.bss*  c/program.elf dmem.hex

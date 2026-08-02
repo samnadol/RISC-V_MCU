@@ -11,7 +11,7 @@ module inst_dec(
     output logic rd_write,              // write alu result to destination register
 
     output logic [2:0] branch_op,       // type of branching to perform
-    output logic [2:0] mem_width,       // width of memory access
+    output logic [1:0] mem_width,       // width of memory access
 
     output logic [3:0] alu_op,          // alu operation to perform
     output logic alu_src_a,             // alu operand one source, 0 = rs1, 1 = pc
@@ -19,6 +19,7 @@ module inst_dec(
 
     output logic mem_read,              // read value at address from alu result (rs1 + imm) to rd
     output logic mem_write,             // write value from rs2 at mem address from alu result (rs1 + imm)
+    output logic mem_unsigned,          // whether the value read should be signed or unsigned
     output logic branch,                // enable branching (to alu result) if cond. met
     output logic jump,                  // enable jumping (to alu result) if cond. met
     output logic system_halt            // permanently stop the system
@@ -39,18 +40,19 @@ module inst_dec(
 
     logic [2:0] imm_type;
     always_comb begin
-        rd_write    = 1'b0;
-        alu_op      = ALU_ADD;
-        branch_op   = BRANCH_BEQ;
-        mem_width   = MEM_WIDTH_WORD;
-        alu_src_a   = 1'b0;
-        alu_src_b   = 1'b0;
-        mem_read    = 1'b0;
-        mem_write   = 1'b0;
-        branch      = 1'b0;
-        jump        = 1'b0;
-        imm_type    = IMM_NONE;
-        system_halt = 1'b0;
+        rd_write     = 1'b0;
+        alu_op       = ALU_ADD;
+        branch_op    = BRANCH_BEQ;
+        mem_width    = MEM_WIDTH_WORD;
+        alu_src_a    = 1'b0;
+        alu_src_b    = 1'b0;
+        mem_read     = 1'b0;
+        mem_write    = 1'b0;
+        mem_unsigned = 1'b0;
+        branch       = 1'b0;
+        jump         = 1'b0;
+        imm_type     = IMM_NONE;
+        system_halt  = 1'b0;
 
         case (opcode)
             OP_REG: begin
@@ -96,7 +98,8 @@ module inst_dec(
                 imm_type = IMM_I;
                 alu_op = ALU_ADD;
                 mem_read = 1'b1;
-                mem_width = mem_width_e'(funct3);
+                mem_width = mem_width_e'(funct3[1:0]);
+                mem_unsigned = funct3[2];
             end
 
             OP_STORE: begin
@@ -106,7 +109,7 @@ module inst_dec(
                 imm_type = IMM_S;
                 alu_op = ALU_ADD;
                 mem_write = 1'b1;
-                mem_width = mem_width_e'(funct3);
+                mem_width = mem_width_e'(funct3[1:0]);
             end
 
             OP_BRANCH: begin

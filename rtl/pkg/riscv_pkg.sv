@@ -39,10 +39,10 @@ package riscv_pkg;
         BRANCH_BGEU = 3'b111
     } branch_type_e;
 
-    typedef enum logic[2:0] {
-        MEM_WIDTH_BYTE          = 3'b?00,
-        MEM_WIDTH_HALFWORD      = 3'b?01,
-        MEM_WIDTH_WORD          = 3'b?10
+    typedef enum logic[1:0] {
+        MEM_WIDTH_BYTE          = 2'b00,
+        MEM_WIDTH_HALFWORD      = 2'b01,
+        MEM_WIDTH_WORD          = 2'b10
     } mem_width_e;
 
     // ALU Operation Selectors, { funct7[5], funct3 }
