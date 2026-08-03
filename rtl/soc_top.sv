@@ -1,27 +1,27 @@
 module soc_top(
     input logic clk,
-    input logic rst,
+    input logic rst_n,
     output logic [31:0] debug_pc,
     output logic simulation_end
 );
     logic [31:0] imem_addr, imem_data;
-    logic [31:0] dmem_addr, dmem_rdata, dmem_wdata;
-    logic dmem_read, dmem_write;
-    logic [1:0] dmem_width;
+    logic [31:0] dbus_addr, dbus_rdata, dbus_wdata;
+    logic dbus_read, dbus_write;
+    logic [1:0] dbus_width;
 
     cpu_top core(
         .clk(clk),
-        .rst(rst),
+        .rst_n(rst_n),
 
         .imem_addr(imem_addr),
         .imem_data(imem_data),
 
-        .dmem_addr(dmem_addr),
-        .dmem_read(dmem_read),
-        .dmem_rdata(dmem_rdata),
-        .dmem_write(dmem_write),
-        .dmem_wdata(dmem_wdata),
-        .dmem_width(dmem_width),
+        .dbus_addr(dbus_addr),
+        .dbus_read(dbus_read),
+        .dbus_rdata(dbus_rdata),
+        .dbus_write(dbus_write),
+        .dbus_wdata(dbus_wdata),
+        .dbus_width(dbus_width),
 
         .debug_pc(debug_pc),
         .simulation_end(simulation_end)
@@ -32,16 +32,15 @@ module soc_top(
         .data(imem_data)
     );
 
-    // replace with dbus, in bus/. that then manages MMIO regions, instantiates dmem and peripherals like UART, in peripherals/
-    dmem data_memory(
+    dbus data_bus(
         .clk(clk),
+        .rst_n(rst_n),
 
-        .mem_read(dmem_read),
-        .mem_write(dmem_write),
-        .mem_width(dmem_width),
-
-        .addr(dmem_addr),
-        .write_data(dmem_wdata),
-        .read_data(dmem_rdata)
+        .addr(dbus_addr),
+        .width(dbus_width),
+        .ren(dbus_read),
+        .wen(dbus_write),
+        .wdata(dbus_wdata),
+        .rdata(dbus_rdata)
     );
 endmodule

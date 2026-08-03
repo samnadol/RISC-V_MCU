@@ -1,7 +1,7 @@
 .PHONY: rtl_compile rtl_sim c_elf c_bin c_hex
 
 rtl_compile: 
-	verilator --cc --exe --trace -Irtl/pkg -Irtl/mem -Irtl/core rtl/pkg/riscv_pkg.sv rtl/soc_top.sv sim.cpp
+	verilator --cc --exe --trace -Irtl/pkg -Irtl/peripherals -Irtl/dbus -Irtl/mem -Irtl/core rtl/pkg/riscv_pkg.sv rtl/soc_top.sv sim.cpp
 rtl_build: rtl_compile
 	make -C obj_dir -f Vriscv_pkg.mk
 rtl_sim: rtl_build

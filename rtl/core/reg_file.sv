@@ -1,6 +1,6 @@
 module reg_file(
     input logic clk,
-    input logic rst,
+    input logic rst_n,
 
     input logic [4:0] rd,
     input logic [4:0] rs1,
@@ -19,7 +19,7 @@ module reg_file(
         rv2 = (rs2 == 5'b0) ? 32'b0 : registers[rs2];
     end
 
-    always_ff @(negedge clk) begin
+    always_ff @(posedge clk) begin
         if (rd_write && rd != 5'b0)
             registers[rd] <= rd_write_val;
     end

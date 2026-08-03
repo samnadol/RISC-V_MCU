@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 
     // 4. Initialize Signals
     top->clk = 0;
-    top->rst = 1;
+    top->rst_n = 0;
 
     // 5. Simulation Loop
     uint64_t ticks = 0;
@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
         
         // Assert reset for the first 5 clock cycles
         if (ticks > 10) {
-            top->rst = 0;
+            top->rst_n = 1;
         }
 
         // Toggle Clock

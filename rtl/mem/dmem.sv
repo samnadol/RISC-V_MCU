@@ -1,9 +1,10 @@
 module dmem(
     input logic clk,
+    input logic rst_n,
     
-    input logic mem_read,
-    input logic mem_write,
-    input logic [1:0] mem_width,
+    input logic read_en,
+    input logic write_en,
+    input logic [1:0] width,
 
     input logic [31:0] addr,
     input logic [31:0] write_data,
@@ -16,19 +17,10 @@ module dmem(
     initial begin
         $readmemh("dmem.hex", ram);
     end
-
-    logic mem_active, mem_write_active, mem_read_active;
-    assign mem_active = (addr < 32'h2000);
-    assign mem_write_active = mem_active & mem_write;
-    assign mem_read_active = mem_active & mem_read;
     
-    // device selector for MMIO (memory valid from 0x00000000 - 0x0000FFFF theoretically, 0x00000000 - 0x00000800 with current implementation)
-    // for UART peripheral, for example, mem_active would be addr[31:16] == 4'h0001, giving it 65535 memory addresses for its stuff
-
-    // write path
-    always_ff @(negedge clk) begin
-        if (mem_write_active) begin
-            case (mem_width)
+    always_ff @(posedge clk) begin
+        if (write_en) begin
+            case (width)
                 MEM_WIDTH_WORD: begin
                     ram[addr + 0] <= write_data[7:0];
                     ram[addr + 1] <= write_data[15:8];
@@ -52,8 +44,8 @@ module dmem(
 
     always_comb begin
         read_data = 32'b0;
-        if (mem_read_active) begin
-            case (mem_width)
+        if (read_en) begin
+            case (width)
                 MEM_WIDTH_WORD: begin
                     read_data = { ram[addr + 3], ram[addr + 2], ram[addr + 1], ram[addr + 0] };
                 end
