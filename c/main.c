@@ -34,8 +34,13 @@ int main(void)
     gpioA.base = (uint8_t *)0x200;
     gpioA.size = 8;
 
+    uint8_t buf[32];
+
     for (int i = 0; i < 8; i++)
+    {
         gpio_set_pin(&gpioA, i);
+        buf[i] = (i + 7) / 2;
+    }
 
     gpio_toggle_pin(&gpioA, 3);
     gpio_unset_pin(&gpioA, 6);

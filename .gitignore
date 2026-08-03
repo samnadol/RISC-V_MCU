@@ -2,3 +2,4 @@ obj_dir/
 c/*.bin
 c/*.o
 *.hex
+*.elf
