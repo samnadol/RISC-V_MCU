@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
         tfp->dump(ticks);
 
         // Periodically print status to console when clock rises
-        if (top->clk && (ticks % 10 == 5)) {
+        if (top->clk && (ticks % 5) == 0) {
             std::cout << "[Cycle " << (ticks / 10) << "] PC: 0x" 
                       << std::hex << top->debug_pc << std::dec << std::endl;
         }

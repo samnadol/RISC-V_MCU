@@ -10,9 +10,17 @@ module dbus(
     input logic [31:0] wdata,
     output logic [31:0] rdata
 );
+    localparam logic [31:0] DMEM_BASE = 32'h0000_0000;
+    localparam logic [31:0] DMEM_SIZE = 32'h0000_2000; // 8KB
+    localparam logic [31:0] GPIO_BASE = 32'h1000_0000;
+    localparam logic [31:0] GPIO_SIZE = 32'h0000_0100; // 256B
+
     logic dmem_select, gpio_select;
-    assign dmem_select = (addr < 32'h200);
-    assign gpio_select = (addr >= 32'h200 && addr < 32'h300);
+    
+    /* verilator lint_off UNSIGNED */
+    assign dmem_select = (addr >= DMEM_BASE && addr < (DMEM_BASE + DMEM_SIZE));
+    /* verilator lint_on UNSIGNED */
+    assign gpio_select = (addr >= GPIO_BASE && addr < (GPIO_BASE + GPIO_SIZE));
 
     logic [31:0] dmem_out, gpio_out;
 
@@ -24,7 +32,7 @@ module dbus(
         .write_en(wen & dmem_select),
         .width(width),
 
-        .addr(addr),
+        .addr(addr - DMEM_BASE),
         .write_data(wdata),
         .read_data(dmem_out)
     );
@@ -37,7 +45,7 @@ module dbus(
         .write_en(wen & gpio_select),
         .width(width),
 
-        .addr(addr),
+        .addr(addr - GPIO_BASE),
         .wdata(wdata),
         .rdata(gpio_out)
     );

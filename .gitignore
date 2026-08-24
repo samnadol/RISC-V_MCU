@@ -3,3 +3,4 @@ c/*.bin
 c/*.o
 *.hex
 *.elf
+*.vcd

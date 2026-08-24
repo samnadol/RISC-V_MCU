@@ -18,7 +18,9 @@ module gpio_peripheral(
    end
 
     always_ff @(posedge clk, negedge rst_n) begin
-        if (~rst_n) pins <= 8'b0;
-        else if (write_en && addr == 32'h200) pins <= wdata[7:0];
+        if (~rst_n) 
+            pins <= 8'b0;
+        else if (write_en && addr == 32'h0) 
+            pins <= wdata[7:0];
     end
 endmodule

@@ -59,7 +59,7 @@ module cpu_top(
         .rst_n(rst_n),
 
         .pc_jmp_en(pc_override),
-        .pc_jmp_target(alu_out),
+        .pc_jmp_target({ alu_out[31:1], 1'b0 }), // JALR clears bit 0 per spec
 
         .pc_curr(pc)
     );
@@ -104,5 +104,5 @@ module cpu_top(
     assign dbus_wdata = rv2;
 
     assign debug_pc = pc;
-    assign simulation_end = system_halt | (debug_pc == 32'hFF);
+    assign simulation_end = system_halt;
 endmodule
