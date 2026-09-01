@@ -34,12 +34,12 @@ int main(void)
     gpioA.base = (uint8_t *)0x10000000;
     gpioA.size = 8;
 
-    volatile uint32_t buf[32];
+    // volatile uint32_t buf[32];
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < gpioA.size; i++)
     {
         gpio_set_pin(&gpioA, i);
-        buf[i] = 0xFF00 + (i * 3);
+        // buf[i] = 0xFF00 + (i * 3);
     }
 
     gpio_toggle_pin(&gpioA, 3);
