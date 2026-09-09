@@ -1,0 +1,51 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Wed Sep  9 17:36:21 2026
+[*]
+[dumpfile] "/Users/snadol/Desktop/RISC-V_MCU/waveform.vcd"
+[dumpfile_mtime] "Wed Sep  9 17:34:04 2026"
+[dumpfile_size] 123313143
+[savefile] "/Users/snadol/Desktop/RISC-V_MCU/savefile.gtkw"
+[timestart] 0
+[size] 1512 817
+[pos] -1 -1
+*-29.000000 759000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[treeopen] TOP.
+[treeopen] TOP.soc_top.
+[sst_width] 255
+[signals_width] 231
+[sst_expanded] 1
+[sst_vpaned_height] 235
+@28
+TOP.clk
+TOP.soc_top.rst_n
+@22
+TOP.soc_top.core.debug_pc[31:0]
+@200
+-
+@22
+TOP.soc_top.core.imem_addr[31:0]
+TOP.soc_top.core.imem_data[31:0]
+@200
+-
+@22
+TOP.soc_top.core.dbus_addr[31:0]
+@28
+TOP.soc_top.core.dbus_read
+@22
+TOP.soc_top.core.dbus_rdata[31:0]
+@28
+TOP.soc_top.core.dbus_write
+@22
+TOP.soc_top.core.dbus_wdata[31:0]
+@200
+-
+@22
+TOP.soc_top.gpio_pins[7:0]
+@200
+-
+@28
+TOP.soc_top.uart_tx
+TOP.soc_top.uart_rx
+[pattern_trace] 1
+[pattern_trace] 0

@@ -1,70 +1,30 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct
-{
-    volatile uint8_t *base;
-    uint8_t size;
-} gpio_reg_t;
-
-#define GPIO_PIN_REG 0
-
-typedef struct
-{
-    volatile uint8_t *base;
-} uart_peripheral_t;
-
-#define UART_REG_STATUS 0 // peripheral status register
-#define UART_BUF_TX     1 // tx buffer
-#define UART_BUF_RX     2 // rx buffer
-
-#define UART_STATUS_IDLE (1<<0) // peripheral idle
-
-
-void gpio_toggle_pin(gpio_reg_t *reg, uint8_t pin)
-{
-    if (pin > reg->size)
-        return;
-    *(reg->base + GPIO_PIN_REG) ^= (1 << pin);
-}
-
-void gpio_set_pin(gpio_reg_t *reg, uint8_t pin)
-{
-    if (pin > reg->size)
-        return;
-    *(reg->base + GPIO_PIN_REG) |= 1 << pin;
-}
-
-void gpio_unset_pin(gpio_reg_t *reg, uint8_t pin)
-{
-    if (pin > reg->size)
-        return;
-    *(reg->base + GPIO_PIN_REG) &= ~(1 << pin);
-}
-
-void uart_tx(uart_peripheral_t *uart, uint8_t data)
-{
-    *(uart->base + UART_BUF_TX) = data;
-    while (!(*(uart->base + UART_REG_STATUS) & UART_STATUS_IDLE)) {}
-}
+#include "lib/gpio.h"
+#include "lib/uart.h"
 
 int main(void)
 {
-    gpio_reg_t gpioA;
+    gpio_peripheral_t gpioA;
     gpioA.base = (uint8_t *)0x10000000;
     gpioA.size = 8;
-
-    for (int i = 0; i < gpioA.size; i++)
-    {
-        gpio_set_pin(&gpioA, i);
-    }
-    gpio_toggle_pin(&gpioA, 3);
-    gpio_unset_pin(&gpioA, 6);
 
     uart_peripheral_t uartA;
     uartA.base = (uint8_t *)0x20000000;
 
-    uart_tx(&uartA, 0b10110100);
+    for (int i = 0; i < gpioA.size; i++)
+    {
+        gpio_set_pin(&gpioA, i);
+        uart_tx(&uartA, i);
+    }
+
+    char* uart_string = "Hello, World!";
+    char *ptr = uart_string;
+    do
+    {
+        uart_tx(&uartA, *ptr);
+    } while (*ptr++);
 
     return 0;
 }

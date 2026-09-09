@@ -11,7 +11,13 @@ SECTIONS
 {
     .text.start : { *(.text.start) } > IMEM
     .text       : { *(.text) *(.text.*) } > IMEM
-    .rodata     : { *(.rodata) *(.rodata.*) *(.srodata) *(.srodata.*) } > IMEM
+
+    . = ORIGIN(DMEM);
+
+    .rodata : AT(DMEM_BASE + (. - ORIGIN(DMEM))) {
+        *(.rodata) *(.rodata.*)
+        *(.srodata) *(.srodata.*)
+    } > DMEM
 
     .data : AT(DMEM_BASE + (. - ORIGIN(DMEM))) {
         __data_start = .;

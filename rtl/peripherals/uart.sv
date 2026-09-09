@@ -12,8 +12,8 @@ module uart #(
     input logic [31:0] wdata,
     output logic [31:0] rdata,
 
-    input logic [7:0] rx,  // external interface
-    output logic [7:0] tx
+    input logic rx,  // external interface
+    output logic tx
 );
     localparam UART_REG_STATUS  = 32'h0; // status register, r
     localparam UART_BUF_TX      = 32'h1; // tx buffer, w
@@ -22,7 +22,6 @@ module uart #(
     localparam UART_STATUS_IDLE = (1<<0); // peripheral idle
 
     logic [7:0] buf_tx, buf_rx, reg_status;
-    logic [12:0] clk_count;
     logic tx_busy;
 
     always_comb begin
@@ -42,21 +41,13 @@ module uart #(
         if (!rst_n) begin
             buf_tx <= 8'b0;
             buf_rx <= 8'b0;
-
-            clk_count <= 0;
         end else if (write_en) begin
             if (addr == UART_BUF_TX)
                 buf_tx <= wdata[7:0];
         end
-
-        if (clk_count < CLOCK_PSC - 1) begin
-            clk_count <= clk_count + 1;
-        end else begin
-            clk_count <= 0;
-        end
     end
 
-    uart_tx tx (
+    uart_tx #(.CLOCK_PSC(CLOCK_PSC)) tx_unit (
         .clk(clk),
         .rst_n(rst_n),
 

@@ -8,7 +8,11 @@ module dbus(
     input logic        wen,
 
     input logic [31:0] wdata,
-    output logic [31:0] rdata
+    output logic [31:0] rdata,
+
+    output logic [7:0] gpio_pins, // external interface
+    input  logic       uart_rx,
+    output logic       uart_tx
 );
     localparam logic [31:0] DMEM_BASE = 32'h0000_0000;
     localparam logic [31:0] DMEM_SIZE = 32'h0000_2000; // 8KB
@@ -51,9 +55,9 @@ module dbus(
 
         .addr(addr - GPIO_BASE),
         .wdata(wdata),
-        .rdata(gpio_out)
+        .rdata(gpio_out),
 
-        .pins()
+        .pins(gpio_pins)
     );
 
     uart uart_a(
@@ -66,10 +70,10 @@ module dbus(
 
         .addr(addr - UART_BASE),
         .wdata(wdata),
-        .rdata(uart_out)
+        .rdata(uart_out),
 
-        .tx(),
-        .rx()
+        .tx(uart_tx),
+        .rx(uart_rx)
     );
 
     always_comb begin

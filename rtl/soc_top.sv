@@ -2,7 +2,12 @@ module soc_top(
     input logic clk,
     input logic rst_n,
     output logic [31:0] debug_pc,
-    output logic simulation_end
+    output logic simulation_end,
+
+    // external pins
+    output logic [7:0] gpio_pins,
+    input  logic       uart_rx,
+    output logic       uart_tx
 );
     logic [31:0] imem_addr, imem_data;
     logic [31:0] dbus_addr, dbus_rdata, dbus_wdata;
@@ -41,6 +46,10 @@ module soc_top(
         .ren(dbus_read),
         .wen(dbus_write),
         .wdata(dbus_wdata),
-        .rdata(dbus_rdata)
+        .rdata(dbus_rdata),
+
+        .gpio_pins(gpio_pins),
+        .uart_rx(uart_rx),
+        .uart_tx(uart_tx)
     );
 endmodule
