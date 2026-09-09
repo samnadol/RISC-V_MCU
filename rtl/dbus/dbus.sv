@@ -12,17 +12,21 @@ module dbus(
 );
     localparam logic [31:0] DMEM_BASE = 32'h0000_0000;
     localparam logic [31:0] DMEM_SIZE = 32'h0000_2000; // 8KB
+    
     localparam logic [31:0] GPIO_BASE = 32'h1000_0000;
     localparam logic [31:0] GPIO_SIZE = 32'h0000_0100; // 256B
 
-    logic dmem_select, gpio_select;
+    localparam logic [31:0] UART_BASE = 32'h2000_0000;
+    localparam logic [31:0] UART_SIZE = 32'h0000_0100; // 256B
     
     /* verilator lint_off UNSIGNED */
     assign dmem_select = (addr >= DMEM_BASE && addr < (DMEM_BASE + DMEM_SIZE));
     /* verilator lint_on UNSIGNED */
     assign gpio_select = (addr >= GPIO_BASE && addr < (GPIO_BASE + GPIO_SIZE));
+    assign uart_select = (addr >= UART_BASE && addr < (UART_BASE + UART_SIZE));
 
-    logic [31:0] dmem_out, gpio_out;
+    logic dmem_select, gpio_select, uart_select;
+    logic [31:0] dmem_out, gpio_out, uart_out;
 
     dmem data_memory(
         .clk(clk),
@@ -37,7 +41,7 @@ module dbus(
         .read_data(dmem_out)
     );
 
-    gpio_peripheral gpio_a(
+    gpio gpio_a(
         .clk(clk),
         .rst_n(rst_n),
 
@@ -50,10 +54,24 @@ module dbus(
         .rdata(gpio_out)
     );
 
+    uart uart_a(
+        .clk(clk),
+        .rst_n(rst_n),
+
+        .read_en(ren & uart_select),
+        .write_en(wen & uart_select),
+        .width(width),
+
+        .addr(addr - UART_BASE),
+        .wdata(wdata),
+        .rdata(uart_out)
+    );
+
     always_comb begin
-        case ({ gpio_select, dmem_select })
-            2'b01: rdata = dmem_out;
-            2'b10: rdata = gpio_out;
+        case ({ uart_select, gpio_select, dmem_select })
+            3'b001: rdata = dmem_out;
+            3'b010: rdata = gpio_out;
+            3'b100: rdata = uart_out;
             default: rdata = 32'b0;
         endcase
     end

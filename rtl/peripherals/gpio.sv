@@ -1,4 +1,4 @@
-module gpio_peripheral(
+module gpio(
     input logic clk,
     input logic rst_n,
 
@@ -15,7 +15,7 @@ module gpio_peripheral(
     always_comb begin
        if (read_en) rdata = {24'b0, pins};
        else rdata = 32'b0;
-   end
+    end
 
     always_ff @(posedge clk, negedge rst_n) begin
         if (~rst_n) 
