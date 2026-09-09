@@ -8,10 +8,10 @@ module gpio(
 
     input logic [31:0] addr,
     input logic [31:0] wdata,
-    output logic [31:0] rdata
-);
-    logic [7:0] pins;
+    output logic [31:0] rdata,
 
+    output logic [7:0] pins // external interface
+);
     always_comb begin
        if (read_en) rdata = {24'b0, pins};
        else rdata = 32'b0;

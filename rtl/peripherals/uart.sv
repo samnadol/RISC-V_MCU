@@ -1,5 +1,3 @@
-typedef enum { IDLE, START, DATA, STOP, CLEAN } uart_state_t;
-
 module uart #(
     parameter CLOCK_PSC = 868 // 100,000,000 (100Mhz) / 115200
 ) (
@@ -12,44 +10,61 @@ module uart #(
 
     input logic [31:0] addr,
     input logic [31:0] wdata,
-    output logic [31:0] rdata
+    output logic [31:0] rdata,
+
+    input logic [7:0] rx,  // external interface
+    output logic [7:0] tx
 );
+    localparam UART_REG_STATUS  = 32'h0; // status register, r
+    localparam UART_BUF_TX      = 32'h1; // tx buffer, w
+    localparam UART_BUF_RX      = 32'h2; // rx buffer, r
+
+    localparam UART_STATUS_IDLE = (1<<0); // peripheral idle
+
     logic [7:0] buf_tx, buf_rx, reg_status;
     logic [12:0] clk_count;
-    logic uart_clk;
+    logic tx_busy;
 
     always_comb begin
         if (read_en) begin
-            rdata = { 32'b0 };
+            if (addr == UART_REG_STATUS)
+                rdata = { 24'b0, reg_status };
+            else if (addr == UART_BUF_RX)
+                rdata = { 24'b0, buf_rx };
+            else
+                rdata = { 32'b0 };
         end else begin
             rdata = 32'b0;
         end
     end
 
     always_ff @(posedge clk, negedge rst_n) begin
-        if (~rst_n) begin
+        if (!rst_n) begin
             buf_tx <= 8'b0;
             buf_rx <= 8'b0;
-            reg_status <= 8'b0;
 
             clk_count <= 0;
         end else if (write_en) begin
-            if (addr == 32'h0)
+            if (addr == UART_BUF_TX)
                 buf_tx <= wdata[7:0];
-            else if (addr == 32'h2)
-                reg_status <= wdata[7:0];
         end
 
         if (clk_count < CLOCK_PSC - 1) begin
-            uart_clk <= 0;
             clk_count <= clk_count + 1;
         end else begin
-            uart_clk <= 1;
             clk_count <= 0;
         end
     end
 
-    always_ff @(posedge uart_clk) begin
+    uart_tx tx (
+        .clk(clk),
+        .rst_n(rst_n),
 
-    end
+        .data(wdata[7:0]), // change to tx_buf when FIFO is added
+        .start(write_en && addr == UART_BUF_TX),
+        .busy(tx_busy),
+        .tx_out(tx)
+    );
+
+    assign reg_status = { 7'b0, !tx_busy };
 endmodule

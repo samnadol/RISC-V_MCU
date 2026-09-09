@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
         ticks++;
 
         // Safety timeout to prevent infinite loops
-        if (ticks > 50000) break;
+        if (ticks > 5000000) break;
     }
 
     // 6. Clean up

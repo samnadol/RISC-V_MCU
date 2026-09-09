@@ -52,6 +52,8 @@ module dbus(
         .addr(addr - GPIO_BASE),
         .wdata(wdata),
         .rdata(gpio_out)
+
+        .pins()
     );
 
     uart uart_a(
@@ -65,6 +67,9 @@ module dbus(
         .addr(addr - UART_BASE),
         .wdata(wdata),
         .rdata(uart_out)
+
+        .tx(),
+        .rx()
     );
 
     always_comb begin

@@ -14,13 +14,11 @@ typedef struct
     volatile uint8_t *base;
 } uart_peripheral_t;
 
-#define UART_TXB 0 // tx buffer
-#define UART_RXB 1 // rx buffer
-#define UART_STATUS 2 // peripheral status register
+#define UART_REG_STATUS 0 // peripheral status register
+#define UART_BUF_TX     1 // tx buffer
+#define UART_BUF_RX     2 // rx buffer
 
-#define UART_STATUS_TXD (1<<0) // tx done signal
-#define UART_STATUS_RXD (1<<1) // rx done signal
-#define UART_STATUS_TXS (1<<2) // tx start flag
+#define UART_STATUS_IDLE (1<<0) // peripheral idle
 
 
 void gpio_toggle_pin(gpio_reg_t *reg, uint8_t pin)
@@ -46,10 +44,8 @@ void gpio_unset_pin(gpio_reg_t *reg, uint8_t pin)
 
 void uart_tx(uart_peripheral_t *uart, uint8_t data)
 {
-    *(uart->base + UART_TXB) = data;
-    *(uart->base + UART_STATUS) |= UART_STATUS_TXS;
-
-    while (*(uart->base + UART_STATUS) & UART_STATUS_TXD) {}
+    *(uart->base + UART_BUF_TX) = data;
+    while (!(*(uart->base + UART_REG_STATUS) & UART_STATUS_IDLE)) {}
 }
 
 int main(void)
