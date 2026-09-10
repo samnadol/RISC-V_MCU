@@ -41,6 +41,6 @@ module fifo #(
   
   always_comb begin
     full = last_op && (wptr == rptr);
-    full = !empty && (wptr == rptr);
+    empty = !last_op && (wptr == rptr);
   end
 endmodule
